@@ -18,3 +18,7 @@
 .bin/
 .task
 .envrc
+
+.DS_Store
+
+node_modules/
