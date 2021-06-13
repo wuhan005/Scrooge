@@ -7,6 +7,8 @@ package cmd
 import (
 	"github.com/flamego/flamego"
 	"github.com/urfave/cli/v2"
+
+	"github.com/wuhan005/Scrooge/internal/route"
 )
 
 var Web = &cli.Command{
@@ -22,6 +24,14 @@ and it takes care of all the other things for you`,
 
 func runWeb(c *cli.Context) error {
 	f := flamego.Classic()
+
+	f.Get("/")
+
+	sponsor := route.NewSponsorHandler()
+	f.Group("/api", func() {
+		f.Get("/sponsor_list", sponsor.List)
+		f.Post("/")
+	})
 
 	f.Run("0.0.0.0", c.Int("port"))
 	return nil
