@@ -87,11 +87,18 @@ func (db *invoices) Create(ctx context.Context, opts CreateInvoiceOptions) (stri
 }
 
 type UpdateInvoiceOptions struct {
-	Paid bool
+	OrderID       string
+	SponsorOpenID string
+	Paid          bool
 }
 
 func (db *invoices) Update(ctx context.Context, uid string, opts UpdateInvoiceOptions) error {
-	return db.WithContext(ctx).Model(&Invoice{}).Where("uid = ?", uid).Update("paid", opts.Paid).Error
+	return db.WithContext(ctx).Model(&Invoice{}).Where("uid = ?", uid).
+		Update("paid", opts.Paid).
+		Updates(&Invoice{
+			OrderID:       opts.OrderID,
+			SponsorOpenID: opts.SponsorOpenID,
+		}).Error
 }
 
 type GetInvoiceOptions struct {

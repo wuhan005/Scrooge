@@ -80,18 +80,18 @@ func testInvoiceCreate(t *testing.T, ctx context.Context, db *invoices) {
 
 func testInvoiceUpdate(t *testing.T, ctx context.Context, db *invoices) {
 	uid, err := db.Create(ctx, CreateInvoiceOptions{
-		OrderID:        "579a57f933397e0f441ba37f239d3721",
 		PriceCents:     2000, // ￥20.00
 		SponsorName:    "Scrooge",
 		SponsorWebSite: "https://github.com/wuhan005/Scrooge",
-		SponsorOpenID:  "876742a2b7950be1491959b76713606a",
 		Comment:        "Well Done!",
 	})
 	assert.Nil(t, err)
 	assert.NotZero(t, uid)
 
 	err = db.Update(ctx, uid, UpdateInvoiceOptions{
-		Paid: true,
+		OrderID:       "579a57f933397e0f441ba37f239d3721",
+		Paid:          true,
+		SponsorOpenID: "876742a2b7950be1491959b76713606a",
 	})
 	assert.Nil(t, err)
 

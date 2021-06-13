@@ -56,6 +56,10 @@ func (c *Context) Error(errorCode uint, message string) error {
 	return nil
 }
 
+func (c *Context) Query(name string) string {
+	return c.Request().URL.Query().Get(name)
+}
+
 // Contexter initializes a classic context for a request.
 func Contexter() flamego.Handler {
 	return func(ctx flamego.Context) {
