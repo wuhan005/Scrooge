@@ -8,6 +8,7 @@ import (
 	"github.com/flamego/flamego"
 	"github.com/urfave/cli/v2"
 
+	"github.com/wuhan005/Scrooge/internal/context"
 	"github.com/wuhan005/Scrooge/internal/route"
 )
 
@@ -32,6 +33,8 @@ func runWeb(c *cli.Context) error {
 		f.Get("/sponsor_list", sponsor.List)
 		f.Post("/")
 	})
+
+	f.Use(context.Contexter())
 
 	f.Run("0.0.0.0", c.Int("port"))
 	return nil
