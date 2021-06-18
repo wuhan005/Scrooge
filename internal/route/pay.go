@@ -27,10 +27,9 @@ func (*Pay) NewInvoice(ctx context.Context, client *paybob.Client, f form.NewPay
 	url.Path = "/api/pay/cashier"
 
 	uid, err := db.Invoices.Create(ctx.Request().Context(), db.CreateInvoiceOptions{
-		PriceCents:     f.PriceCents,
-		SponsorName:    f.SponsorName,
-		SponsorWebSite: f.SponsorWebSite,
-		Comment:        f.Comment,
+		PriceCents:  f.PriceCents,
+		SponsorName: f.SponsorName,
+		Comment:     f.Comment,
 	})
 	if err != nil {
 		log.Error("Failed to create new invoice: %v", err)

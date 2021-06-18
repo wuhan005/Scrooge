@@ -47,12 +47,11 @@ func TestInvoices(t *testing.T) {
 
 func testInvoiceCreate(t *testing.T, ctx context.Context, db *invoices) {
 	uid, err := db.Create(ctx, CreateInvoiceOptions{
-		OrderID:        "579a57f933397e0f441ba37f239d3721",
-		PriceCents:     2000, // ￥20.00
-		SponsorName:    "Scrooge",
-		SponsorWebSite: "https://github.com/wuhan005/Scrooge",
-		SponsorOpenID:  "876742a2b7950be1491959b76713606a",
-		Comment:        "Well Done!",
+		OrderID:       "579a57f933397e0f441ba37f239d3721",
+		PriceCents:    2000, // ￥20.00
+		SponsorName:   "Scrooge",
+		SponsorOpenID: "876742a2b7950be1491959b76713606a",
+		Comment:       "Well Done!",
 	})
 	assert.Nil(t, err)
 	assert.NotZero(t, uid)
@@ -67,23 +66,21 @@ func testInvoiceCreate(t *testing.T, ctx context.Context, db *invoices) {
 		Model: gorm.Model{
 			ID: 1,
 		},
-		UID:            uid,
-		OrderID:        "579a57f933397e0f441ba37f239d3721",
-		PriceCents:     2000,
-		SponsorName:    "Scrooge",
-		SponsorWebSite: "https://github.com/wuhan005/Scrooge",
-		SponsorOpenID:  "876742a2b7950be1491959b76713606a",
-		Comment:        "Well Done!",
+		UID:           uid,
+		OrderID:       "579a57f933397e0f441ba37f239d3721",
+		PriceCents:    2000,
+		SponsorName:   "Scrooge",
+		SponsorOpenID: "876742a2b7950be1491959b76713606a",
+		Comment:       "Well Done!",
 	}
 	assert.Equal(t, want, got)
 }
 
 func testInvoiceUpdate(t *testing.T, ctx context.Context, db *invoices) {
 	uid, err := db.Create(ctx, CreateInvoiceOptions{
-		PriceCents:     2000, // ￥20.00
-		SponsorName:    "Scrooge",
-		SponsorWebSite: "https://github.com/wuhan005/Scrooge",
-		Comment:        "Well Done!",
+		PriceCents:  2000, // ￥20.00
+		SponsorName: "Scrooge",
+		Comment:     "Well Done!",
 	})
 	assert.Nil(t, err)
 	assert.NotZero(t, uid)
@@ -105,26 +102,24 @@ func testInvoiceUpdate(t *testing.T, ctx context.Context, db *invoices) {
 		Model: gorm.Model{
 			ID: 1,
 		},
-		UID:            uid,
-		OrderID:        "579a57f933397e0f441ba37f239d3721",
-		Paid:           true,
-		PriceCents:     2000,
-		SponsorName:    "Scrooge",
-		SponsorWebSite: "https://github.com/wuhan005/Scrooge",
-		SponsorOpenID:  "876742a2b7950be1491959b76713606a",
-		Comment:        "Well Done!",
+		UID:           uid,
+		OrderID:       "579a57f933397e0f441ba37f239d3721",
+		Paid:          true,
+		PriceCents:    2000,
+		SponsorName:   "Scrooge",
+		SponsorOpenID: "876742a2b7950be1491959b76713606a",
+		Comment:       "Well Done!",
 	}
 	assert.Equal(t, want, got)
 }
 
 func testInvoiceGet(t *testing.T, ctx context.Context, db *invoices) {
 	uid, err := db.Create(ctx, CreateInvoiceOptions{
-		OrderID:        "579a57f933397e0f441ba37f239d3721",
-		PriceCents:     2000, // ￥20.00
-		SponsorName:    "Scrooge",
-		SponsorWebSite: "https://github.com/wuhan005/Scrooge",
-		SponsorOpenID:  "876742a2b7950be1491959b76713606a",
-		Comment:        "Well Done!",
+		OrderID:       "579a57f933397e0f441ba37f239d3721",
+		PriceCents:    2000, // ￥20.00
+		SponsorName:   "Scrooge",
+		SponsorOpenID: "876742a2b7950be1491959b76713606a",
+		Comment:       "Well Done!",
 	})
 	assert.Nil(t, err)
 	assert.NotZero(t, uid)
@@ -139,12 +134,11 @@ func testInvoiceGet(t *testing.T, ctx context.Context, db *invoices) {
 	assert.NotZero(t, uid)
 
 	uid, err = db.Create(ctx, CreateInvoiceOptions{
-		OrderID:        "a0270de1b2e9279410829d2f6fb831bc",
-		PriceCents:     8000, // ￥80.00
-		SponsorName:    "Scrooge",
-		SponsorWebSite: "https://github.com/wuhan005/Scrooge",
-		SponsorOpenID:  "876742a2b7950be1491959b76713606a",
-		Comment:        "Excellent!",
+		OrderID:       "a0270de1b2e9279410829d2f6fb831bc",
+		PriceCents:    8000, // ￥80.00
+		SponsorName:   "Scrooge",
+		SponsorOpenID: "876742a2b7950be1491959b76713606a",
+		Comment:       "Excellent!",
 	})
 	assert.Nil(t, err)
 	assert.NotZero(t, uid)
@@ -164,34 +158,31 @@ func testInvoiceGet(t *testing.T, ctx context.Context, db *invoices) {
 			Model: gorm.Model{
 				ID: 3,
 			},
-			OrderID:        "a0270de1b2e9279410829d2f6fb831bc",
-			PriceCents:     8000,
-			SponsorName:    "Scrooge",
-			SponsorWebSite: "https://github.com/wuhan005/Scrooge",
-			SponsorOpenID:  "876742a2b7950be1491959b76713606a",
-			Comment:        "Excellent!",
+			OrderID:       "a0270de1b2e9279410829d2f6fb831bc",
+			PriceCents:    8000,
+			SponsorName:   "Scrooge",
+			SponsorOpenID: "876742a2b7950be1491959b76713606a",
+			Comment:       "Excellent!",
 		},
 		{
 			Model: gorm.Model{
 				ID: 2,
 			},
-			OrderID:        "9e66623ec3649dd2eabdb2b711ad18bf",
-			PriceCents:     5000,
-			SponsorName:    "Scrooge Mcduck",
-			SponsorWebSite: "",
-			SponsorOpenID:  "8b3348fe50baa6bb487fd931203a3d73",
-			Comment:        "",
+			OrderID:       "9e66623ec3649dd2eabdb2b711ad18bf",
+			PriceCents:    5000,
+			SponsorName:   "Scrooge Mcduck",
+			SponsorOpenID: "8b3348fe50baa6bb487fd931203a3d73",
+			Comment:       "",
 		},
 		{
 			Model: gorm.Model{
 				ID: 1,
 			},
-			OrderID:        "579a57f933397e0f441ba37f239d3721",
-			PriceCents:     2000,
-			SponsorName:    "Scrooge",
-			SponsorWebSite: "https://github.com/wuhan005/Scrooge",
-			SponsorOpenID:  "876742a2b7950be1491959b76713606a",
-			Comment:        "Well Done!",
+			OrderID:       "579a57f933397e0f441ba37f239d3721",
+			PriceCents:    2000,
+			SponsorName:   "Scrooge",
+			SponsorOpenID: "876742a2b7950be1491959b76713606a",
+			Comment:       "Well Done!",
 		},
 	}
 	assert.Equal(t, want, got)
@@ -213,23 +204,21 @@ func testInvoiceGet(t *testing.T, ctx context.Context, db *invoices) {
 			Model: gorm.Model{
 				ID: 3,
 			},
-			OrderID:        "a0270de1b2e9279410829d2f6fb831bc",
-			PriceCents:     8000,
-			SponsorName:    "Scrooge",
-			SponsorWebSite: "https://github.com/wuhan005/Scrooge",
-			SponsorOpenID:  "876742a2b7950be1491959b76713606a",
-			Comment:        "Excellent!",
+			OrderID:       "a0270de1b2e9279410829d2f6fb831bc",
+			PriceCents:    8000,
+			SponsorName:   "Scrooge",
+			SponsorOpenID: "876742a2b7950be1491959b76713606a",
+			Comment:       "Excellent!",
 		},
 		{
 			Model: gorm.Model{
 				ID: 1,
 			},
-			OrderID:        "579a57f933397e0f441ba37f239d3721",
-			PriceCents:     2000,
-			SponsorName:    "Scrooge",
-			SponsorWebSite: "https://github.com/wuhan005/Scrooge",
-			SponsorOpenID:  "876742a2b7950be1491959b76713606a",
-			Comment:        "Well Done!",
+			OrderID:       "579a57f933397e0f441ba37f239d3721",
+			PriceCents:    2000,
+			SponsorName:   "Scrooge",
+			SponsorOpenID: "876742a2b7950be1491959b76713606a",
+			Comment:       "Well Done!",
 		},
 	}
 	assert.Equal(t, want, got)
@@ -237,12 +226,11 @@ func testInvoiceGet(t *testing.T, ctx context.Context, db *invoices) {
 
 func testInvoiceGetByID(t *testing.T, ctx context.Context, db *invoices) {
 	uid, err := db.Create(ctx, CreateInvoiceOptions{
-		OrderID:        "579a57f933397e0f441ba37f239d3721",
-		PriceCents:     2000, // ￥20.00
-		SponsorName:    "Scrooge",
-		SponsorWebSite: "https://github.com/wuhan005/Scrooge",
-		SponsorOpenID:  "876742a2b7950be1491959b76713606a",
-		Comment:        "Well Done!",
+		OrderID:       "579a57f933397e0f441ba37f239d3721",
+		PriceCents:    2000, // ￥20.00
+		SponsorName:   "Scrooge",
+		SponsorOpenID: "876742a2b7950be1491959b76713606a",
+		Comment:       "Well Done!",
 	})
 	assert.Nil(t, err)
 	assert.NotZero(t, uid)
@@ -267,24 +255,22 @@ func testInvoiceGetByID(t *testing.T, ctx context.Context, db *invoices) {
 		Model: gorm.Model{
 			ID: 2,
 		},
-		OrderID:        "9e66623ec3649dd2eabdb2b711ad18bf",
-		PriceCents:     5000,
-		SponsorName:    "Scrooge Mcduck",
-		SponsorWebSite: "",
-		SponsorOpenID:  "8b3348fe50baa6bb487fd931203a3d73",
-		Comment:        "",
+		OrderID:       "9e66623ec3649dd2eabdb2b711ad18bf",
+		PriceCents:    5000,
+		SponsorName:   "Scrooge Mcduck",
+		SponsorOpenID: "8b3348fe50baa6bb487fd931203a3d73",
+		Comment:       "",
 	}
 	assert.Equal(t, want, got)
 }
 
 func testInvoiceGetByUID(t *testing.T, ctx context.Context, db *invoices) {
 	uid, err := db.Create(ctx, CreateInvoiceOptions{
-		OrderID:        "579a57f933397e0f441ba37f239d3721",
-		PriceCents:     2000, // ￥20.00
-		SponsorName:    "Scrooge",
-		SponsorWebSite: "https://github.com/wuhan005/Scrooge",
-		SponsorOpenID:  "876742a2b7950be1491959b76713606a",
-		Comment:        "Well Done!",
+		OrderID:       "579a57f933397e0f441ba37f239d3721",
+		PriceCents:    2000, // ￥20.00
+		SponsorName:   "Scrooge",
+		SponsorOpenID: "876742a2b7950be1491959b76713606a",
+		Comment:       "Well Done!",
 	})
 	assert.Nil(t, err)
 	assert.NotZero(t, uid)
@@ -309,12 +295,11 @@ func testInvoiceGetByUID(t *testing.T, ctx context.Context, db *invoices) {
 		Model: gorm.Model{
 			ID: 2,
 		},
-		OrderID:        "9e66623ec3649dd2eabdb2b711ad18bf",
-		PriceCents:     5000,
-		SponsorName:    "Scrooge Mcduck",
-		SponsorWebSite: "",
-		SponsorOpenID:  "8b3348fe50baa6bb487fd931203a3d73",
-		Comment:        "",
+		OrderID:       "9e66623ec3649dd2eabdb2b711ad18bf",
+		PriceCents:    5000,
+		SponsorName:   "Scrooge Mcduck",
+		SponsorOpenID: "8b3348fe50baa6bb487fd931203a3d73",
+		Comment:       "",
 	}
 	assert.Equal(t, want, got)
 }

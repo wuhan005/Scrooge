@@ -52,9 +52,8 @@ type Invoice struct {
 	Paid       bool
 	PriceCents int
 
-	SponsorName    string
-	SponsorWebSite string
-	SponsorOpenID  string
+	SponsorName   string
+	SponsorOpenID string
 
 	Comment string
 }
@@ -64,25 +63,23 @@ type invoices struct {
 }
 
 type CreateInvoiceOptions struct {
-	OrderID        string
-	PriceCents     int
-	SponsorName    string
-	SponsorWebSite string
-	SponsorOpenID  string
-	Comment        string
+	OrderID       string
+	PriceCents    int
+	SponsorName   string
+	SponsorOpenID string
+	Comment       string
 }
 
 func (db *invoices) Create(ctx context.Context, opts CreateInvoiceOptions) (string, error) {
 	uid := strings.ReplaceAll(uuid.NewV4().String(), "-", "")
 
 	return uid, db.WithContext(ctx).Create(&Invoice{
-		UID:            uid,
-		OrderID:        opts.OrderID,
-		PriceCents:     opts.PriceCents,
-		SponsorName:    opts.SponsorName,
-		SponsorWebSite: opts.SponsorWebSite,
-		SponsorOpenID:  opts.SponsorOpenID,
-		Comment:        opts.Comment,
+		UID:           uid,
+		OrderID:       opts.OrderID,
+		PriceCents:    opts.PriceCents,
+		SponsorName:   opts.SponsorName,
+		SponsorOpenID: opts.SponsorOpenID,
+		Comment:       opts.Comment,
 	}).Error
 }
 
