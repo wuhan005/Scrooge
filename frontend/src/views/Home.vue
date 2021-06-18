@@ -1,5 +1,7 @@
 <template>
   <v-container class="mt-8">
+    <v-snackbar v-model="messageBar" color="error" :timeout="2000" :top="true">{{ message }}</v-snackbar>
+
     <v-row class="text-center">
       <v-col cols="8">
         <Profile/>
@@ -32,10 +34,10 @@
           <v-stepper-items>
             <!-- Form -->
             <v-stepper-content step="1">
-              <v-card-title><h3>{{ paymentAmount ? `支持 ￥${paymentAmount}` : '自选金额支持' }}</h3></v-card-title>
+              <v-card-title><h3>{{ paymentAmount === 0 ? `支持 ￥${paymentAmount}` : '自选金额支持' }}</h3></v-card-title>
               <v-card-subtitle>感谢您的支持！</v-card-subtitle>
               <v-card-text>
-                <v-text-field v-if="paymentAmount === null" placeholder="00.00" dense outlined label="金额"
+                <v-text-field v-if="paymentAmount === 0" placeholder="00.00" dense outlined label="金额"
                               prefix="￥"></v-text-field>
                 <v-text-field dense outlined label="您的姓名 / 昵称"></v-text-field>
                 <v-textarea dense outlined label="说点什么？" rows="3"></v-textarea>
@@ -104,20 +106,30 @@ export default {
   name: 'Home',
 
   data: () => ({
+    messageBar: false,
+    message: '',
+
     paymentDialog: false,
     paymentAmount: 0,
     step: 1,
 
-    tiers: [
-      {amount: 5, comment: '谢谢老板'},
-      {amount: 10, comment: '谢谢老板'},
-      {amount: 50, comment: '谢谢老板'},
-      {amount: 100, comment: '谢谢老板'},
-      {amount: null, comment: '谢谢老板'},
-    ],
+    tiers: [],
   }),
 
+  mounted() {
+    this.getTiers()
+  },
+
   methods: {
+    getTiers() {
+      this.utils.GET('/tiers').then(res => {
+        this.tiers = res
+      }).catch(err => {
+        this.messageBar = true
+        this.message = err.response.data.msg
+      })
+    },
+
     createNewInvoice() {
       this.step = 2;
     },

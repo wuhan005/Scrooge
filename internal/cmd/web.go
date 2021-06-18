@@ -5,10 +5,15 @@
 package cmd
 
 import (
+	"io/fs"
+	"net/http"
+
 	"github.com/Cardinal-Platform/binding"
 	"github.com/flamego/flamego"
 	"github.com/urfave/cli/v2"
+	log "unknwon.dev/clog/v2"
 
+	"github.com/wuhan005/Scrooge/frontend"
 	"github.com/wuhan005/Scrooge/internal/context"
 	"github.com/wuhan005/Scrooge/internal/form"
 	"github.com/wuhan005/Scrooge/internal/paybob"
@@ -34,11 +39,23 @@ func runWeb(c *cli.Context) error {
 		ctx.Map(client)
 	}
 
-	f.Get("/")
+	f.NotFound(func(ctx context.Context) error {
+		return ctx.Error(40400, "not found")
+	})
+
+	fe, err := fs.Sub(frontend.FS, "dist")
+	if err != nil {
+		log.Fatal("Failed to sub filesystem: %v", err)
+	}
+	f.Use(flamego.Static(flamego.StaticOptions{
+		FileSystem: http.FS(fe),
+	}))
 
 	f.Group("/api", func() {
-		sponsor := route.NewSponsorHandler()
-		f.Get("/sponsor_list", sponsor.List)
+		home := route.NewHomeHandler()
+		f.Get("/profile", home.Profile)
+		f.Get("/tiers", home.Tiers)
+		f.Get("/sponsor_list", home.List)
 
 		pay := route.NewPayHandler()
 		f.Group("/pay", func() {
@@ -50,6 +67,15 @@ func runWeb(c *cli.Context) error {
 	})
 
 	f.Use(context.Contexter())
+
+	// TODO remove the temporary CORS header.
+	f.Use(func(ctx context.Context) {
+		ctx.ResponseWriter().Header().Set("Access-Control-Allow-Origin", "*")
+		ctx.ResponseWriter().Header().Set("Access-Control-Allow-Headers", "*")
+		if ctx.Request().Method == http.MethodOptions {
+			ctx.ResponseWriter().WriteHeader(http.StatusOK)
+		}
+	})
 
 	f.Run("0.0.0.0", c.Int("port"))
 	return nil

@@ -1,23 +1,44 @@
 <template>
   <v-card elevation="1" class="mb-6">
     <v-card-title>
-      <v-avatar size="80"><img src="https://avatars.githubusercontent.com/u/12731778"></v-avatar>
+      <v-avatar size="80"><img :src="profile.avatar_url"></v-avatar>
       <div class="ml-3 text-left">
-        <div>E99p1ant</div>
-        <div class="text--secondary subtitle-1">Be cool, but also be warm.</div>
+        <div>{{ profile.name }}</div>
+        <div class="text--secondary subtitle-1">{{ profile.slogan }}</div>
       </div>
     </v-card-title>
     <v-card-text>
-      <div class="text-left body-1">
-        这边写点啥...
-      </div>
+      <div class="text-left body-1">{{ profile.description }}</div>
     </v-card-text>
   </v-card>
 </template>
 
 <script>
 export default {
-  name: "Profile"
+  name: "Profile",
+
+  data: () => ({
+    profile: {}
+  }),
+
+  mounted() {
+    this.getProfile()
+  },
+
+  methods: {
+    getProfile() {
+      this.utils.GET('/profile').then(res => {
+        this.profile = res
+      }).catch(err => {
+        this.profile = {
+          avatar_url: '',
+          name: '',
+          slogan: '',
+          description: '',
+        }
+      })
+    }
+  }
 }
 </script>
 
