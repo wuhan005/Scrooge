@@ -4,6 +4,9 @@ import './registerServiceWorker'
 import router from './router'
 import vuetify from './plugins/vuetify'
 import utils from './utils'
+import VueQr from 'vue-qr'
+
+Vue.use(VueQr)
 
 Vue.config.productionTip = false
 Vue.prototype.utils = utils

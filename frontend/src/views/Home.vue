@@ -13,9 +13,7 @@
             <v-card-title>
               <v-list-item>
                 <v-list-item-content>{{ t.amount ? `￥${t.amount}` : '自选金额' }}</v-list-item-content>
-                <v-btn depressed color="primary"
-                       @click="paymentDialog = true; paymentAmount = t.amount; step = 1;">发电
-                </v-btn>
+                <v-btn depressed color="primary" @click="openDialog(t)">发电</v-btn>
               </v-list-item>
               <v-list-item>
                 <div class="body-1">{{ t.comment }}</div>
@@ -34,13 +32,14 @@
           <v-stepper-items>
             <!-- Form -->
             <v-stepper-content step="1">
-              <v-card-title><h3>{{ paymentAmount === 0 ? `支持 ￥${paymentAmount}` : '自选金额支持' }}</h3></v-card-title>
+              <v-card-title><h3>{{ paymentAmount !== 0 ? `支持 ￥${paymentAmount}` : '自选金额支持' }}</h3></v-card-title>
               <v-card-subtitle>感谢您的支持！</v-card-subtitle>
               <v-card-text>
-                <v-text-field v-if="paymentAmount === 0" placeholder="00.00" dense outlined label="金额"
+                <v-text-field v-model="invoiceForm.priceCents" v-show="paymentAmount === 0" placeholder="00.00" dense
+                              outlined label="金额"
                               prefix="￥"></v-text-field>
-                <v-text-field dense outlined label="您的姓名 / 昵称"></v-text-field>
-                <v-textarea dense outlined label="说点什么？" rows="3"></v-textarea>
+                <v-text-field v-model="invoiceForm.sponsorName" dense outlined label="您的姓名 / 昵称"></v-text-field>
+                <v-textarea v-model="invoiceForm.comment" dense outlined label="说点什么？" rows="3"></v-textarea>
               </v-card-text>
               <v-divider></v-divider>
               <v-card-actions>
@@ -60,14 +59,7 @@
 
               <v-card-text class="mt-5 mb-5">
                 <v-row justify="center">
-                  <v-img :src="`https://picsum.photos/500/300`" aspect-ratio="1"
-                         class="grey lighten-2" max-width="200">
-                    <template v-slot:placeholder>
-                      <v-row class="fill-height ma-0" align="center" justify="center">
-                        <v-progress-circular indeterminate color="grey lighten-5"></v-progress-circular>
-                      </v-row>
-                    </template>
-                  </v-img>
+                  <vue-qr :text="redirectURL"></vue-qr>
                 </v-row>
               </v-card-text>
               <v-divider></v-divider>
@@ -106,6 +98,7 @@ export default {
   name: 'Home',
 
   data: () => ({
+    timer: null,
     messageBar: false,
     message: '',
 
@@ -114,10 +107,23 @@ export default {
     step: 1,
 
     tiers: [],
+
+    invoiceForm: {
+      priceCents: 0,
+      sponsorName: '',
+      comment: '',
+    },
+
+    redirectURL: '',
+    invoiceUID: '',
   }),
 
   mounted() {
     this.getTiers()
+  },
+
+  beforeDestroy() {
+    clearInterval(this.timer)
   },
 
   methods: {
@@ -130,12 +136,49 @@ export default {
       })
     },
 
+    openDialog(t) {
+      this.paymentDialog = true;
+      this.paymentAmount = t.amount;
+      this.invoiceForm = {
+        priceCents: t.amount,
+        sponsorName: '',
+        comment: '',
+      }
+      this.step = 1;
+    },
+
     createNewInvoice() {
-      this.step = 2;
+      let priceCents = parseFloat(this.invoiceForm.priceCents)
+      if (isNaN(priceCents)) {
+        this.messageBar = true
+        this.message = '金额不正确'
+        return
+      }
+
+      this.utils.POST('/pay', {
+        PriceCents: priceCents.toFixed(2) * 100,
+        SponsorName: this.invoiceForm.sponsorName,
+        Comment: this.invoiceForm.comment,
+      }).then(res => {
+        this.redirectURL = res.redirect_url;
+        this.invoiceUID = res.uid;
+        this.step = 2;
+
+        this.timer = setInterval(this.checkInvoice, 2000);
+      })
     },
 
     closeInvoice() {
       this.step = 1;
+    },
+
+    checkInvoice() {
+      this.utils.GET(`/pay/query?uid=${this.invoiceUID}`).then(res => {
+        if (res.Paid === true) {
+          this.step = 3;
+          clearInterval(this.timer)
+        }
+      })
     }
   },
 
