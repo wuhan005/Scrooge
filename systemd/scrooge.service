@@ -1,0 +1,40 @@
+# scrooge.service
+# /etc/systemd/system/scrooge.service
+# Start by `service scrooge start`
+# Enable by `systemctl enable scrooge`
+
+[Unit]
+Description=Scrooge
+Documentation=https://github.com/wuhan005/Scrooge
+After=network.target network-online.target
+Requires=network-online.target
+
+[Service]
+Restart=always
+User=root
+Group=root
+WorkingDirectory=/etc/scrooge
+ExecStart=/etc/scrooge/Scrooge web
+TimeoutStopSec=5s
+LimitNOFILE=1048576
+LimitNPROC=512
+PrivateTmp=true
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+
+# Flamego
+Environment="FLAMEGO_ENV=production"
+
+# Paybob
+Environment="PAYBOB_MCHID=<paybob_mchid>"
+Environment="PAYBOB_KEY=<paybob_key>"
+
+# Postgres
+Environment="PGPORT=5432"
+Environment="PGHOST=<host>"
+Environment="PGUSER=<user>"
+Environment="PGPASSWORD=<password>"
+Environment="PGDATABASE=scrooge"
+Environment="PGSSLMODE=disable"
+
+[Install]
+WantedBy=multi-user.target
