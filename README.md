@@ -2,6 +2,10 @@
 
 Personal sponsorship site based on [PAYBOB](https://paybob.cn/). / 基于 [PAYBOB](https://paybob.cn/) 的个人赞助收款站点
 
+> “不能再这样下去了——每分钟损失十亿美元！600 年后我非破产不可！” —— [史高治·麦克达克](https://zh.wikipedia.org/wiki/%E5%8F%B2%E9%AB%98%E6%B2%BB%C2%B7%E9%BA%A6%E5%85%8B%E8%80%81%E9%B8%AD)
+
+<img src="assets/Scrooge.JPG" align="right" width="250px"/>
+
 ## Requirement
 
 * [PAYBOB](https://paybob.cn/) Account
