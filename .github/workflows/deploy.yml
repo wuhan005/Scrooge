@@ -14,14 +14,25 @@ jobs:
           go-version: 1.16
         id: go
 
-      - name: Check out code into the Go module directory
+      - name: Set up NodeJS
+        uses: actions/setup-node@v2
+        with:
+          node-version: '12'
+
+      - name: Install Yarn
+        run: npm install -g yarn
+
+      - name: Check out code
         uses: actions/checkout@v1
 
       - name: Get dependencies
         run: |
           go mod tidy
 
-      - name: Build
+      - name: Build frontend
+        run: cd frontend && yarn install && yarn build
+
+      - name: Build binary
         run: |
           CGO_ENABLED=0 go build -v -trimpath -ldflags "-w -s -extldflags '-static' -X 'github.com/wuhan005/Scrooge.CommitSHA=$GITHUB_SHA'" -o Scrooge .
 
