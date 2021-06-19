@@ -10,12 +10,6 @@ import (
 )
 
 func main() {
-	defer log.Stop()
-	err := log.NewConsole()
-	if err != nil {
-		panic(err)
-	}
-
 	app := cli.NewApp()
 	app.Name = "Scrooge"
 	app.Usage = ""

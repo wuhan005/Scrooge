@@ -10,6 +10,7 @@ import (
 
 	log "unknwon.dev/clog/v2"
 
+	"github.com/wuhan005/Scrooge/internal/conf"
 	"github.com/wuhan005/Scrooge/internal/context"
 	"github.com/wuhan005/Scrooge/internal/db"
 	"github.com/wuhan005/Scrooge/internal/form"
@@ -92,7 +93,7 @@ func (*Pay) Cashier(ctx context.Context, client *paybob.Client) error {
 	resp, err := client.MakeJSAPIPay(paybob.JSAPIPayOptions{
 		UID:       uid,
 		TotalFee:  invoice.PriceCents,
-		Title:     fmt.Sprintf("赞助大茄子 %.02f 元", float64(invoice.PriceCents)/100),
+		Title:     fmt.Sprintf("赞助 %s %.02f 元", conf.Profile.Name, float64(invoice.PriceCents)/100),
 		Attach:    nil,
 		OpenID:    openID,
 		NotifyURL: notifyURL,

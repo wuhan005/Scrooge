@@ -8,7 +8,7 @@
       </div>
     </v-card-title>
     <v-card-text>
-      <div class="text-left body-1">{{ profile.description }}</div>
+      <div class="text-left body-1 mt-5">{{ profile.description }}</div>
     </v-card-text>
   </v-card>
 </template>

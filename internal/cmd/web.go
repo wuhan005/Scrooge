@@ -14,6 +14,7 @@ import (
 	log "unknwon.dev/clog/v2"
 
 	"github.com/wuhan005/Scrooge/frontend"
+	"github.com/wuhan005/Scrooge/internal/conf"
 	"github.com/wuhan005/Scrooge/internal/context"
 	"github.com/wuhan005/Scrooge/internal/db"
 	"github.com/wuhan005/Scrooge/internal/form"
@@ -30,11 +31,17 @@ and it takes care of all the other things for you`,
 	Action: runWeb,
 	Flags: []cli.Flag{
 		intFlag("port, p", 19999, "Temporary port number to prevent conflict"),
+		stringFlag("config, c", "", "Custom configuration file path"),
 	},
 }
 
 func runWeb(c *cli.Context) error {
-	err := db.Init()
+	err := conf.Init(c.String("config"))
+	if err != nil {
+		log.Fatal("Failed to load config: %v", err)
+	}
+
+	err = db.Init()
 	if err != nil {
 		log.Fatal("Failed to connect to database: %v", err)
 	}

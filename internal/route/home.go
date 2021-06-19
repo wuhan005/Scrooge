@@ -9,6 +9,7 @@ import (
 
 	log "unknwon.dev/clog/v2"
 
+	"github.com/wuhan005/Scrooge/internal/conf"
 	"github.com/wuhan005/Scrooge/internal/context"
 	"github.com/wuhan005/Scrooge/internal/db"
 )
@@ -22,10 +23,10 @@ func NewHomeHandler() *Home {
 
 func (*Home) Profile(ctx context.Context) error {
 	return ctx.Success(map[string]interface{}{
-		"avatar_url":  "https://avatars.githubusercontent.com/u/12731778",
-		"name":        "E99p1ant",
-		"slogan":      "Be cool, but also be warm.",
-		"description": "说点什么？",
+		"avatar_url":  conf.Profile.AvatarURL,
+		"name":        conf.Profile.Name,
+		"slogan":      conf.Profile.Slogan,
+		"description": conf.Profile.Description,
 	})
 }
 
@@ -35,15 +36,15 @@ func (*Home) Tiers(ctx context.Context) error {
 		Amount  int    `json:"amount"`
 		Comment string `json:"comment"`
 	}
-
-	// TODO read from database.
-	tiers := []tier{
-		{Amount: 5, Comment: "谢谢老板"},
-		{Amount: 10, Comment: "谢谢老板"},
-		{Amount: 50, Comment: "谢谢老板"},
-		{Amount: 100, Comment: "谢谢老板"},
-		{Amount: 0, Comment: "谢谢老板"},
+	
+	tiers := make([]tier, 0, len(conf.Tier.Items))
+	for _, t := range conf.Tier.Items {
+		tiers = append(tiers, tier{
+			Amount:  t.Amount,
+			Comment: t.Comment,
+		})
 	}
+
 	return ctx.Success(tiers)
 }
 
