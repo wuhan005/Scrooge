@@ -5,7 +5,7 @@
     <v-row class="text-center">
       <v-col cols="8">
         <Profile/>
-        <SponsorList/>
+        <SponsorList ref="sponsorList"/>
       </v-col>
       <v-col>
         <v-card elevation="1" class="text-left">
@@ -177,6 +177,7 @@ export default {
         if (res.Paid === true) {
           this.step = 3;
           clearInterval(this.timer)
+          this.$refs.sponsorList.$mount();
         }
       })
     }
