@@ -40,7 +40,7 @@
       </div>
     </v-card>
     <div class="text-center font-weight-light mt-3 body-2">
-      <span>Powered by Scrooge / Made with  <v-icon dense color="pink">mdi-heart</v-icon> by E99p1ant</span>
+      <span>Powered by Scrooge / Made with  <v-icon small color="pink">fas fa-heart</v-icon> by E99p1ant</span>
     </div>
 
   </v-container>
