@@ -15,14 +15,15 @@ import (
 
 func init() {
 	binding.CustomErrorHandler = func(ctx flamego.Context, errors binding.Errors) {
-		ctx.ResponseWriter().Header().Set("Content-Type", "application/json")
-		ctx.ResponseWriter().WriteHeader(http.StatusBadRequest)
-
-		log.Error("%+v", errors)
 		var msg string
 		if errors.Len() != 0 {
 			msg = errors[0].Message
+		} else {
+			return
 		}
+
+		ctx.ResponseWriter().Header().Set("Content-Type", "application/json")
+		ctx.ResponseWriter().WriteHeader(http.StatusBadRequest)
 
 		err := jsoniter.NewEncoder(ctx.ResponseWriter()).Encode(
 			map[string]interface{}{

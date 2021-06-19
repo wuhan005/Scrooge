@@ -8,14 +8,13 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
-	"strings"
 
 	jsoniter "github.com/json-iterator/go"
 	"github.com/pkg/errors"
-	uuid "github.com/satori/go.uuid"
 )
 
 type JSAPIPayOptions struct {
+	UID       string
 	TotalFee  int
 	Title     string
 	Attach    interface{}
@@ -24,10 +23,17 @@ type JSAPIPayOptions struct {
 }
 
 type JSAPIResponse struct {
-	UID     string
 	OrderID string
-	Query   string
-	Sign    string
+	Query   JSAPIQuery
+}
+
+type JSAPIQuery struct {
+	AppID     string `json:"app_id"`
+	TimeStamp string `json:"time_stamp"`
+	NonceStr  string `json:"nonce_str"`
+	Package   string `json:"package"`
+	SignType  string `json:"sign_type"`
+	PaySign   string `json:"pay_sign"`
 }
 
 // MakeJSAPIPay makes a new JSAPI pay.
@@ -38,8 +44,6 @@ func (c *Client) MakeJSAPIPay(opts JSAPIPayOptions) (*JSAPIResponse, error) {
 		return nil, errors.Wrap(err, "parse url")
 	}
 
-	uid := strings.ReplaceAll(uuid.NewV4().String(), "-", "")
-
 	attachBody, err := jsoniter.Marshal(opts.Attach)
 	if err != nil {
 		return nil, errors.Wrap(err, "marshal")
@@ -48,7 +52,7 @@ func (c *Client) MakeJSAPIPay(opts JSAPIPayOptions) (*JSAPIResponse, error) {
 	q := u.Query()
 	q.Set("mchid", c.mchid)
 	q.Set("total_fee", strconv.Itoa(opts.TotalFee))
-	q.Set("out_trade_no", uid)
+	q.Set("out_trade_no", opts.UID)
 	q.Set("title", opts.Title)
 	q.Set("attach", string(attachBody))
 	q.Set("notify_url", opts.NotifyURL)
@@ -70,8 +74,15 @@ func (c *Client) MakeJSAPIPay(opts JSAPIPayOptions) (*JSAPIResponse, error) {
 		ReturnCode    int    `json:"return_code"`
 		ReturnMessage string `json:"return_msg"`
 		PayJSOrderID  string `json:"payjs_order_id"`
-		JSAPI         string `json:"jsapi"`
-		Sign          string `json:"sign"`
+		JSAPI         struct {
+			AppID     string `json:"appId"`
+			TimeStamp string `json:"timeStamp"`
+			NonceStr  string `json:"nonceStr"`
+			Package   string `json:"package"`
+			SignType  string `json:"signType"`
+			PaySign   string `json:"paySign"`
+		} `json:"jsapi"`
+		Sign string `json:"sign"`
 	}
 	err = jsoniter.NewDecoder(resp.Body).Decode(&respBody)
 	if err != nil {
@@ -83,9 +94,14 @@ func (c *Client) MakeJSAPIPay(opts JSAPIPayOptions) (*JSAPIResponse, error) {
 	}
 
 	return &JSAPIResponse{
-		UID:     uid,
 		OrderID: respBody.PayJSOrderID,
-		Query:   respBody.JSAPI,
-		Sign:    respBody.Sign,
+		Query: JSAPIQuery{
+			AppID:     respBody.JSAPI.AppID,
+			TimeStamp: respBody.JSAPI.TimeStamp,
+			NonceStr:  respBody.JSAPI.NonceStr,
+			Package:   respBody.JSAPI.Package,
+			SignType:  respBody.JSAPI.SignType,
+			PaySign:   respBody.JSAPI.PaySign,
+		},
 	}, nil
 }

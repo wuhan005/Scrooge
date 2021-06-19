@@ -6,6 +6,7 @@ package context
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/flamego/flamego"
 	jsoniter "github.com/json-iterator/go"
@@ -15,6 +16,7 @@ import (
 // Context represents context of a request.
 type Context struct {
 	flamego.Context
+	Host string
 }
 
 func (c *Context) Success(data interface{}) error {
@@ -63,8 +65,14 @@ func (c *Context) Query(name string) string {
 // Contexter initializes a classic context for a request.
 func Contexter() flamego.Handler {
 	return func(ctx flamego.Context) {
+		host := ctx.Request().Host
+		if !strings.HasPrefix(host, "http://") && !strings.HasPrefix(host, "https://") {
+			host = "http://" + host + "/"
+		}
+
 		c := Context{
 			Context: ctx,
+			Host:    host,
 		}
 
 		c.Map(c)

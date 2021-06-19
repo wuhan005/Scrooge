@@ -10,6 +10,7 @@
     "axios": "^0.21.1",
     "register-service-worker": "^1.7.1",
     "vue": "^2.6.11",
+    "vue-qr": "^2.5.0",
     "vue-router": "^3.2.0",
     "vuetify": "^2.4.0"
   },

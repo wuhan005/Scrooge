@@ -6,6 +6,7 @@ package route
 
 import (
 	"fmt"
+	"net/url"
 
 	log "unknwon.dev/clog/v2"
 
@@ -23,8 +24,14 @@ func NewPayHandler() *Pay {
 }
 
 func (*Pay) NewInvoice(ctx context.Context, client *paybob.Client, f form.NewPayment) error {
-	url := ctx.Request().URL
-	url.Path = "/api/pay/cashier"
+	u, err := url.Parse(ctx.Host)
+	if err != nil {
+		log.Error("Failed to parse host: %v", err)
+		return ctx.Error(50000, "internal server error")
+	}
+
+	// To frontend `/cashier`.
+	u.Path = "/cashier"
 
 	uid, err := db.Invoices.Create(ctx.Request().Context(), db.CreateInvoiceOptions{
 		PriceCents:  f.PriceCents,
@@ -36,15 +43,15 @@ func (*Pay) NewInvoice(ctx context.Context, client *paybob.Client, f form.NewPay
 		return ctx.ServerError()
 	}
 
-	q := url.Query()
+	q := u.Query()
 	q.Set("uid", uid)
-	url.RawQuery = q.Encode()
+	u.RawQuery = q.Encode()
 
 	// Redirect to get user OpenID.
-	redirectURL := client.GetOpenIDRedirectURL(url.String())
+	redirectURL := client.GetOpenIDRedirectURL(u.String())
 	return ctx.Success(map[string]interface{}{
-		"uid":         uid,
-		"redirectURL": redirectURL,
+		"uid":          uid,
+		"redirect_url": redirectURL,
 	})
 }
 
@@ -65,7 +72,7 @@ func (*Pay) Query(ctx context.Context) error {
 }
 
 func (*Pay) Cashier(ctx context.Context, client *paybob.Client) error {
-	openID := ctx.Query("openid")
+	openID := ctx.Query("openID")
 	uid := ctx.Query("uid")
 	invoice, err := db.Invoices.GetByUID(ctx.Request().Context(), uid)
 	if err != nil {
@@ -80,35 +87,38 @@ func (*Pay) Cashier(ctx context.Context, client *paybob.Client) error {
 		return ctx.Error(40300, "订单已支付")
 	}
 
-	notifyURL := ctx.Request().URL
-	notifyURL.Path = "/api/pay/callback"
+	notifyURL := ""
 
 	resp, err := client.MakeJSAPIPay(paybob.JSAPIPayOptions{
+		UID:       uid,
 		TotalFee:  invoice.PriceCents,
 		Title:     fmt.Sprintf("赞助大茄子 %.02f 元", float64(invoice.PriceCents)/100),
 		Attach:    nil,
 		OpenID:    openID,
-		NotifyURL: notifyURL.String(),
+		NotifyURL: notifyURL,
 	})
 	if err != nil {
 		log.Error("Failed to make JSAPI pay: %v", err)
 		return ctx.ServerError()
 	}
 
-	// Update invoice orderID and sponsor WeChat OpenID.
-	err = db.Invoices.Update(ctx.Request().Context(), invoice.UID, db.UpdateInvoiceOptions{
-		OrderID:       resp.OrderID,
-		SponsorOpenID: openID,
-	})
-	if err != nil {
-		log.Error("Failed to update invoice: %v", err)
-		return ctx.ServerError()
+	if invoice.SponsorOpenID == "" {
+		// Update invoice orderID and sponsor WeChat OpenID.
+		err = db.Invoices.Update(ctx.Request().Context(), invoice.UID, db.UpdateInvoiceOptions{
+			OrderID:       resp.OrderID,
+			SponsorOpenID: openID,
+		})
+		if err != nil {
+			log.Error("Failed to update invoice: %v", err)
+			return ctx.ServerError()
+		}
 	}
 
 	return ctx.Success(map[string]interface{}{
-		"OrderID": resp.OrderID,
-		"Query":   resp.Query,
-		"Sign":    resp.Sign,
+		"uid":         invoice.UID,
+		"price_cents": invoice.PriceCents,
+		"order_id":    resp.OrderID,
+		"query":       resp.Query,
 	})
 }
 
@@ -132,6 +142,15 @@ func (*Pay) Callback(ctx context.Context, client *paybob.Client) error {
 	}
 	if invoice.Paid {
 		return ctx.Success("")
+	}
+
+	resp, err := client.Check(invoice.OrderID)
+	if err != nil {
+		log.Error("Failed to check invoice status: %v", err)
+		return ctx.ServerError()
+	}
+	if resp.Status == 0 {
+		return ctx.ServerError()
 	}
 
 	err = db.Invoices.Update(ctx.Request().Context(), uid, db.UpdateInvoiceOptions{

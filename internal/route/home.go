@@ -16,7 +16,6 @@ func NewHomeHandler() *Home {
 }
 
 func (*Home) Profile(ctx context.Context) error {
-	// TODO read from database.
 	return ctx.Success(map[string]interface{}{
 		"avatar_url":  "https://avatars.githubusercontent.com/u/12731778",
 		"name":        "E99p1ant",
