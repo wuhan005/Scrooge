@@ -2,6 +2,8 @@
 
 Personal sponsorship site based on [PAYBOB](https://paybob.cn/). / 基于 [PAYBOB](https://paybob.cn/) 的个人赞助收款站点
 
+<img src="assets/Scrooge.JPG"/>
+
 ## Requirement
 
 * [PAYBOB](https://paybob.cn/) Account
