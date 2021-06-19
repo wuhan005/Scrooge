@@ -30,6 +30,7 @@ func TestInvoices(t *testing.T) {
 		{"Create", testInvoiceCreate},
 		{"Update", testInvoiceUpdate},
 		{"Get", testInvoiceGet},
+		{"List", testInvoiceList},
 		{"GetByID", testInvoiceGetByID},
 		{"GetByUID", testInvoiceGetByUID},
 	} {
@@ -270,6 +271,67 @@ func testInvoiceGet(t *testing.T, ctx context.Context, db *invoices) {
 			SponsorOpenID: "8b3348fe50baa6bb487fd931203a3d73",
 			Comment:       "",
 			Paid:          true,
+		},
+	}
+	assert.Equal(t, want, got)
+}
+
+func testInvoiceList(t *testing.T, ctx context.Context, db *invoices) {
+	uid1, err := db.Create(ctx, CreateInvoiceOptions{
+		OrderID:       "579a57f933397e0f441ba37f239d3721",
+		PriceCents:    2000, // ￥20.00
+		SponsorName:   "Scrooge",
+		SponsorOpenID: "876742a2b7950be1491959b76713606a",
+		Comment:       "Well Done!",
+	})
+	assert.Nil(t, err)
+	assert.NotZero(t, uid1)
+	err = db.Update(ctx, uid1, UpdateInvoiceOptions{Paid: true})
+	assert.Nil(t, err)
+
+	uid2, err := db.Create(ctx, CreateInvoiceOptions{
+		OrderID:       "9e66623ec3649dd2eabdb2b711ad18bf",
+		PriceCents:    5000, // ￥50.00
+		SponsorName:   "E99p1ant",
+		SponsorOpenID: "8b3348fe50baa6bb487fd931203a3d73",
+	})
+	assert.Nil(t, err)
+	assert.NotZero(t, uid2)
+	err = db.Update(ctx, uid2, UpdateInvoiceOptions{Paid: true})
+	assert.Nil(t, err)
+
+	uid3, err := db.Create(ctx, CreateInvoiceOptions{
+		OrderID:       "51e92d5b304cccbe18b32ac108421657",
+		PriceCents:    8000, // ￥80.00
+		SponsorName:   "E99p1ant",
+		SponsorOpenID: "8b3348fe50baa6bb487fd931203a3d73",
+	})
+	assert.Nil(t, err)
+	assert.NotZero(t, uid3)
+	err = db.Update(ctx, uid3, UpdateInvoiceOptions{Paid: true})
+	assert.Nil(t, err)
+
+	uid4, err := db.Create(ctx, CreateInvoiceOptions{
+		OrderID:       "a0270de1b2e9279410829d2f6fb831bc",
+		PriceCents:    12000, // ￥120.00
+		SponsorName:   "Scrooge",
+		SponsorOpenID: "876742a2b7950be1491959b76713606a",
+		Comment:       "Excellent!",
+	})
+	assert.Nil(t, err)
+	assert.NotZero(t, uid4)
+
+	got, err := db.List(ctx)
+	assert.Nil(t, err)
+
+	want := []*SponsorList{
+		{
+			SponsorName: "E99p1ant",
+			Subtotal:    13000,
+		},
+		{
+			SponsorName: "Scrooge",
+			Subtotal:    2000,
 		},
 	}
 	assert.Equal(t, want, got)
