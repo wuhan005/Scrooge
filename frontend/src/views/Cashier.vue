@@ -1,6 +1,11 @@
 <template>
-  <v-container v-if="status !== 'pending'">
+  <v-container>
     <v-card>
+      <div v-if="status === 'pending'">
+        <v-card-text class="text-center">
+          <span class="body-2 mt-5">正在唤起微信支付...</span>
+        </v-card-text>
+      </div>
       <div v-if="status === 'failed'">
         <v-card-text class="text-center">
           <v-icon size="64" color="pink">fas fa-exclamation-triangle</v-icon>
