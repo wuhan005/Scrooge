@@ -87,6 +87,9 @@
       </v-card>
     </v-dialog>
 
+    <div class="text-center font-weight-light mt-12 body-2">
+      <span>Powered by Scrooge / Made with  <v-icon dense color="pink">mdi-heart</v-icon> by E99p1ant</span>
+    </div>
   </v-container>
 </template>
 
