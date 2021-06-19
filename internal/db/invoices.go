@@ -27,9 +27,6 @@ type InvoiceStore interface {
 	// Get returns the invoices list with the given options.
 	// The zero value in the options will be ignored.
 	Get(ctx context.Context, opts GetInvoiceOptions) ([]*Invoice, error)
-	// List returns the summary invoice data which contains the sponsor's information, subtotal, count.
-	// It sorted by sponsor's subtotal.
-	List(ctx context.Context) ([]*InvoiceSummary, error)
 	// GetByID gets the invoice with the given id.
 	// It returns ErrInvoiceNotExists error when the invoice dose not exist.
 	GetByID(ctx context.Context, id uint) (*Invoice, error)
@@ -103,6 +100,7 @@ type GetInvoiceOptions struct {
 	OrderID       string
 	SponsorName   string
 	SponsorOpenID string
+	Paid          bool
 }
 
 func (db *invoices) Get(ctx context.Context, opts GetInvoiceOptions) ([]*Invoice, error) {
@@ -120,20 +118,12 @@ func (db *invoices) Get(ctx context.Context, opts GetInvoiceOptions) ([]*Invoice
 	if opts.SponsorOpenID != "" {
 		query = query.Where("sponsor_open_id = ?", opts.SponsorOpenID)
 	}
+	if opts.Paid {
+		query = query.Where("paid = ?", opts.Paid)
+	}
 
 	var invoices []*Invoice
 	return invoices, query.Order("id DESC").Find(&invoices).Error
-}
-
-type InvoiceSummary struct {
-	SubtotalCents  int
-	Count          int
-	SponsorName    string
-	SponsorWebSite string
-}
-
-func (db *invoices) List(ctx context.Context) ([]*InvoiceSummary, error) {
-	panic("implement me")
 }
 
 var ErrInvoiceNotExists = errors.New("invoice dose not exist")

@@ -114,7 +114,7 @@ func testInvoiceUpdate(t *testing.T, ctx context.Context, db *invoices) {
 }
 
 func testInvoiceGet(t *testing.T, ctx context.Context, db *invoices) {
-	uid, err := db.Create(ctx, CreateInvoiceOptions{
+	uid1, err := db.Create(ctx, CreateInvoiceOptions{
 		OrderID:       "579a57f933397e0f441ba37f239d3721",
 		PriceCents:    2000, // ￥20.00
 		SponsorName:   "Scrooge",
@@ -122,18 +122,18 @@ func testInvoiceGet(t *testing.T, ctx context.Context, db *invoices) {
 		Comment:       "Well Done!",
 	})
 	assert.Nil(t, err)
-	assert.NotZero(t, uid)
+	assert.NotZero(t, uid1)
 
-	uid, err = db.Create(ctx, CreateInvoiceOptions{
+	uid2, err := db.Create(ctx, CreateInvoiceOptions{
 		OrderID:       "9e66623ec3649dd2eabdb2b711ad18bf",
 		PriceCents:    5000, // ￥50.00
 		SponsorName:   "Scrooge Mcduck",
 		SponsorOpenID: "8b3348fe50baa6bb487fd931203a3d73",
 	})
 	assert.Nil(t, err)
-	assert.NotZero(t, uid)
+	assert.NotZero(t, uid2)
 
-	uid, err = db.Create(ctx, CreateInvoiceOptions{
+	uid3, err := db.Create(ctx, CreateInvoiceOptions{
 		OrderID:       "a0270de1b2e9279410829d2f6fb831bc",
 		PriceCents:    8000, // ￥80.00
 		SponsorName:   "Scrooge",
@@ -141,7 +141,7 @@ func testInvoiceGet(t *testing.T, ctx context.Context, db *invoices) {
 		Comment:       "Excellent!",
 	})
 	assert.Nil(t, err)
-	assert.NotZero(t, uid)
+	assert.NotZero(t, uid3)
 
 	// Get all the invoices.
 	got, err := db.Get(ctx, GetInvoiceOptions{})
@@ -219,6 +219,57 @@ func testInvoiceGet(t *testing.T, ctx context.Context, db *invoices) {
 			SponsorName:   "Scrooge",
 			SponsorOpenID: "876742a2b7950be1491959b76713606a",
 			Comment:       "Well Done!",
+		},
+	}
+	assert.Equal(t, want, got)
+
+	// Filer paid invoice
+
+	// Invoice 2
+	err = db.Update(ctx, uid2, UpdateInvoiceOptions{
+		Paid: true,
+	})
+	assert.Nil(t, err)
+
+	// Invoice 3
+	err = db.Update(ctx, uid3, UpdateInvoiceOptions{
+		Paid: true,
+	})
+	assert.Nil(t, err)
+
+	got, err = db.Get(ctx, GetInvoiceOptions{
+		Paid: true,
+	})
+	assert.Nil(t, err)
+
+	for _, invoice := range got {
+		invoice.UID = ""
+		invoice.CreatedAt = time.Time{}
+		invoice.UpdatedAt = time.Time{}
+	}
+
+	want = []*Invoice{
+		{
+			Model: gorm.Model{
+				ID: 3,
+			},
+			OrderID:       "a0270de1b2e9279410829d2f6fb831bc",
+			PriceCents:    8000,
+			SponsorName:   "Scrooge",
+			SponsorOpenID: "876742a2b7950be1491959b76713606a",
+			Comment:       "Excellent!",
+			Paid:          true,
+		},
+		{
+			Model: gorm.Model{
+				ID: 2,
+			},
+			OrderID:       "9e66623ec3649dd2eabdb2b711ad18bf",
+			PriceCents:    5000,
+			SponsorName:   "Scrooge Mcduck",
+			SponsorOpenID: "8b3348fe50baa6bb487fd931203a3d73",
+			Comment:       "",
+			Paid:          true,
 		},
 	}
 	assert.Equal(t, want, got)
