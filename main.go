@@ -9,6 +9,10 @@ import (
 	"github.com/wuhan005/Scrooge/internal/cmd"
 )
 
+var (
+	CommitSHA string
+)
+
 func main() {
 	app := cli.NewApp()
 	app.Name = "Scrooge"
