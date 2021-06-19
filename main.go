@@ -9,15 +9,9 @@ import (
 	"github.com/wuhan005/Scrooge/internal/cmd"
 )
 
-var (
-	CommitSHA string
-)
-
 func main() {
 	app := cli.NewApp()
 	app.Name = "Scrooge"
-	app.Usage = ""
-	app.Version = ""
 	app.Commands = []*cli.Command{
 		cmd.Web,
 	}
