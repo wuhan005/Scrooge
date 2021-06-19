@@ -21,3 +21,10 @@ tasks:
       - go build -v
         -trimpath
         -o ./.bin/Scrooge
+
+  publish:
+    desc: Build Linux binary
+    cmds:
+      - GOOS=linux go build -v
+        -trimpath
+        -o ./.bin/Scrooge
