@@ -25,6 +25,7 @@ tasks:
   publish:
     desc: Build Linux binary
     cmds:
+      - cd frontend && yarn build
       - GOOS=linux go build -v
         -trimpath
         -o ./.bin/Scrooge
