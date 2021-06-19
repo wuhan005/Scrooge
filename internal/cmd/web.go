@@ -80,15 +80,6 @@ func runWeb(c *cli.Context) error {
 
 	f.Use(context.Contexter())
 
-	// TODO remove the temporary CORS header.
-	f.Use(func(ctx context.Context) {
-		ctx.ResponseWriter().Header().Set("Access-Control-Allow-Origin", "*")
-		ctx.ResponseWriter().Header().Set("Access-Control-Allow-Headers", "*")
-		if ctx.Request().Method == http.MethodOptions {
-			ctx.ResponseWriter().WriteHeader(http.StatusOK)
-		}
-	})
-
 	f.Run("0.0.0.0", c.Int("port"))
 	return nil
 }
