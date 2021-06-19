@@ -13,8 +13,8 @@ import (
 
 func TestClient_GetOpenIDRedirectURL(t *testing.T) {
 	client := NewClient("123456789", "")
-	got := client.GetOpenIDRedirectURL("https://github.red/openid")
-	want := "https://paybob.cn/api/openid?callback_url=https%3A%2F%2Fgithub.red%2Fopenid&mchid=123456789"
+	got := client.GetOpenIDRedirectURL("https://github.red/openid?a=b")
+	want := "https://paybob.cn/api/openid?mchid=123456789&callback_url=https%3A%2F%2Fgithub.red%2Fopenid%3Fa%3Db"
 	assert.Equal(t, want, got)
 }
 

@@ -5,22 +5,15 @@
 package paybob
 
 import (
+	"fmt"
 	"net/http"
 	"net/url"
 )
 
 // GetOpenIDRedirectURL returns the URL which should be redirect to get the user open ID.
 func (c *Client) GetOpenIDRedirectURL(redirectURL string) string {
-	u, err := url.Parse("https://paybob.cn/api/openid")
-	if err != nil {
-		return ""
-	}
-
-	q := u.Query()
-	q.Set("mchid", c.mchid)
-	q.Set("callback_url", redirectURL)
-	u.RawQuery = q.Encode()
-	return u.String()
+	// The `mchid` must be the first parameter.
+	return fmt.Sprintf("https://paybob.cn/api/openid?mchid=%s&callback_url=%s", c.mchid, url.QueryEscape(redirectURL))
 }
 
 // ParseOpenID gets the WeChat OpenID from a HTTP request.
