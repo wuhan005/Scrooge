@@ -15,6 +15,7 @@ import (
 
 	"github.com/wuhan005/Scrooge/frontend"
 	"github.com/wuhan005/Scrooge/internal/context"
+	"github.com/wuhan005/Scrooge/internal/db"
 	"github.com/wuhan005/Scrooge/internal/form"
 	"github.com/wuhan005/Scrooge/internal/paybob"
 	"github.com/wuhan005/Scrooge/internal/route"
@@ -32,6 +33,11 @@ and it takes care of all the other things for you`,
 }
 
 func runWeb(c *cli.Context) error {
+	err := db.Init()
+	if err != nil {
+		log.Fatal("Failed to connect to database: %v", err)
+	}
+
 	f := flamego.Classic()
 
 	paymenter := func(ctx context.Context) {
