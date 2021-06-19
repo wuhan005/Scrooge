@@ -87,7 +87,7 @@ func (*Pay) Cashier(ctx context.Context, client *paybob.Client) error {
 		return ctx.Error(40300, "订单已支付")
 	}
 
-	notifyURL := ""
+	notifyURL := ctx.Host + "api/pay/callback"
 
 	resp, err := client.MakeJSAPIPay(paybob.JSAPIPayOptions{
 		UID:       uid,
@@ -123,15 +123,20 @@ func (*Pay) Cashier(ctx context.Context, client *paybob.Client) error {
 }
 
 func (*Pay) Callback(ctx context.Context, client *paybob.Client) error {
-	sign := ctx.Query("sign")
-	q := ctx.Request().Request.URL.Query()
-	q.Del("sign")
+	err := ctx.Request().ParseForm()
+	if err != nil {
+		log.Error("Failed to parse form: %v", err)
+		return ctx.Error(40000, "请求体错误")
+	}
 
-	if client.Sign(q) != sign {
+	f := ctx.Request().Form
+	sign := f.Get("sign")
+	f.Del("sign")
+	if client.Sign(f) != sign {
 		return ctx.Error(40300, "签名错误")
 	}
 
-	uid := ctx.Query("out_trade_no")
+	uid := f.Get("out_trade_no")
 	invoice, err := db.Invoices.GetByUID(ctx.Request().Context(), uid)
 	if err != nil {
 		if err == db.ErrInvoiceNotExists {

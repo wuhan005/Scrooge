@@ -67,7 +67,7 @@ func Contexter() flamego.Handler {
 	return func(ctx flamego.Context) {
 		host := ctx.Request().Host
 		if !strings.HasPrefix(host, "http://") && !strings.HasPrefix(host, "https://") {
-			host = "http://" + host + "/"
+			host = "https://" + host + "/"
 		}
 
 		c := Context{

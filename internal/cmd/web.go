@@ -19,6 +19,7 @@ import (
 	"github.com/wuhan005/Scrooge/internal/form"
 	"github.com/wuhan005/Scrooge/internal/paybob"
 	"github.com/wuhan005/Scrooge/internal/route"
+	"github.com/wuhan005/Scrooge/internal/static"
 )
 
 var Web = &cli.Command{
@@ -45,17 +46,15 @@ func runWeb(c *cli.Context) error {
 		ctx.Map(client)
 	}
 
-	f.NotFound(func(ctx context.Context) error {
-		return ctx.Error(40400, "not found")
-	})
-
 	fe, err := fs.Sub(frontend.FS, "dist")
 	if err != nil {
 		log.Fatal("Failed to sub filesystem: %v", err)
 	}
+
 	f.Use(flamego.Static(flamego.StaticOptions{
 		FileSystem: http.FS(fe),
 	}))
+	f.NotFound(static.NotFound(http.FS(fe), "index.html"))
 
 	f.Group("/api", func() {
 		home := route.NewHomeHandler()
@@ -68,7 +67,7 @@ func runWeb(c *cli.Context) error {
 			f.Post("", binding.Bind(form.NewPayment{}), pay.NewInvoice)
 			f.Get("/query", pay.Query)
 			f.Get("/cashier", pay.Cashier)
-			f.Get("/callback", pay.Callback)
+			f.Post("/callback", pay.Callback)
 		}, paymenter)
 	})
 
