@@ -5,7 +5,7 @@
 package form
 
 type NewPayment struct {
-	PriceCents  int `binding:"Required;Range(1,5000000)"`
+	PriceCents  int
 	SponsorName string
 	Comment     string
 }

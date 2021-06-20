@@ -25,6 +25,10 @@ func NewPayHandler() *Pay {
 }
 
 func (*Pay) NewInvoice(ctx context.Context, client *paybob.Client, f form.NewPayment) error {
+	if f.PriceCents <= 0 || f.PriceCents >= 5000000 {
+		return ctx.Error(40000, "错误的赞助金额")
+	}
+
 	u, err := url.Parse(ctx.Host)
 	if err != nil {
 		log.Error("Failed to parse host: %v", err)
