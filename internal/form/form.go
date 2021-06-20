@@ -15,10 +15,7 @@ import (
 
 func init() {
 	binding.CustomErrorHandler = func(ctx flamego.Context, errors binding.Errors) {
-		var msg string
-		if errors.Len() != 0 {
-			msg = errors[0].Message
-		} else {
+		if errors.Len() == 0 {
 			return
 		}
 
@@ -28,7 +25,7 @@ func init() {
 		err := jsoniter.NewEncoder(ctx.ResponseWriter()).Encode(
 			map[string]interface{}{
 				"error": 40000,
-				"msg":   msg, // FIXME error message should be more human-friendly.
+				"msg":   "输入有误",
 			},
 		)
 		if err != nil {
