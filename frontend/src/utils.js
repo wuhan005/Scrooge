@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-let baseURL = '/api'
+const baseURL = process.env.VUE_APP_BASE_URL
 
 export default {
     baseURL: baseURL,
