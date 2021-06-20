@@ -135,7 +135,7 @@ export default {
         this.tiers = res
       }).catch(err => {
         this.messageBar = true
-        this.message = err.response.data.msg
+        this.message = err
       })
     },
 
@@ -168,6 +168,9 @@ export default {
         this.step = 2;
 
         this.timer = setInterval(this.checkInvoice, 2000);
+      }).catch(err => {
+        this.messageBar = true
+        this.message = err
       })
     },
 

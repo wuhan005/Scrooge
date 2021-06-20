@@ -63,7 +63,7 @@ export default {
         this.sponsorList = res
       }).catch(err => {
         this.messageBar = true
-        this.message = err.response.data.msg
+        this.message = err
       })
     },
   }
